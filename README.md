@@ -1,6 +1,6 @@
 # An Tâm - Máy tính Dự toán Chi phí Điều trị Ung thư
 
-Prototype cho HackAIThon 2026 - Đề tài 4: Y tế thông minh
+Prototype cho HackAIThon 2026 - Đề tài: Y tế thông minh
 
 ## Tổng quan
 
