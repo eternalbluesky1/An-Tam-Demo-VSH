@@ -1,24 +1,33 @@
-# An Tâm — Deterministic Cost Calculation Engine
+# An Tâm — Máy tính Dự toán Chi phí Điều trị Ung thư
 
-> Prototype for Vietnamese Student HackAIThon 2026 — Đề tài 4: Y tế thông minh
+> **Trạng thái:** Prototype — Vòng 1 HackAIThon 2026
+> **Mục đích:** Thư mục chứa mã nguồn demo của tính năng Máy tính Tài chính (Financial Projector), bao gồm engine tính toán xác định và giao diện bệnh nhân
+> **Ngày:** 19/06/2026
+> **Đề tài:** Y tế thông minh (Bảng B — Challenger)
 
-## What this is
+---
 
-A working prototype of **An Tâm** — a cancer treatment cost estimation tool for Vietnamese patients. The core is a **deterministic cost calculation engine** that uses real data from official Vietnamese healthcare regulations.
+## Tổng quan
 
-## What it does
+Đây là nguyên mẫu hoạt động của **Máy tính Tài chính** — thành phần cốt lõi trong hệ thống An Tâm. Engine tính toán sử dụng dữ liệu thực tế từ các văn bản pháp quy y tế Việt Nam để ước tính chi phí điều trị ung thư, bao gồm tỷ lệ chi trả BHYT theo từng loại thuốc, từng hạng bệnh viện.
 
-- Estimates cancer treatment costs based on cancer type, stage, BHYT card type, hospital tier, and route
-- Calculates BHYT coverage using the **62-disease rule** (QĐ-BYT)
-- Applies **drug-specific BHYT rates** from Thông tư 20/2022/TT-BYT (not blanket percentages)
-- Handles non-covered items (PET/CT, immunotherapy, molecular testing)
-- Generates time projections (weekly/monthly/quarterly cost distribution)
-- Includes transient costs (transport, food, accommodation during treatment)
+---
 
-## Cancer types covered
+## Tính năng chính
 
-| Code | Type |
-|------|------|
+- **Ước tính chi phí điều trị** dựa trên loại ung thư, giai đoạn, thẻ BHYT, hạng bệnh viện và tuyến khám
+- **Tính tỷ lệ BHYT** theo **Quy tắc 62 bệnh** (QĐ-BYT): bệnh nhân ung thư tại tuyến chuyên sâu đúng tuyến được hưởng 100% chi phí dịch vụ
+- **Tỷ lệ BHYT theo từng loại thuốc** từ Phụ lục I, Mục 14 — Thông tư 20/2022/TT-BYT: hóa trị 50%, nội tiết 80%, đích 50%, miễn dịch 0% (chưa trong danh mục)
+- **Xử lý các mục không được BHYT thanh toán**: PET/CT, xét nghiệm phân tử, liệu pháp miễn dịch
+- **Dự phóng theo thời gian**: phân bổ chi phí theo tuần, tháng, quý
+- **Chi phí phát sinh trong điều trị**: đi lại, ăn uống, chỗ ở cho bệnh nhân và người nhà
+
+---
+
+## Loại ung thư được hỗ trợ
+
+| Mã | Loại ung thư |
+|----|-------------|
 | C50 | Ung thư vú |
 | C34 | Ung thư phổi |
 | C20 | Ung thư đại tràng |
@@ -27,56 +36,74 @@ A working prototype of **An Tâm** — a cancer treatment cost estimation tool f
 | C73 | Ung thư tuyến giáp |
 | C61 | Ung thư tuyến tiền liệt |
 
-## Data sources
+---
 
-- **Service prices:** QĐ3222/QĐ-BYT (Bệnh viện Chợ Rẫy)
-- **Drug formulary:** Phụ lục I, Mục 14 — Thông tư 20/2022/TT-BYT + TT 37/2024
-- **BHYT coverage rules:** Luật BHYT, 62 bệnh ưu tiên tuyến chuyên sâu
-- **Treatment protocols:** NCCN guidelines adapted for Vietnamese context
+## Nguồn dữ liệu
 
-## Running the tests
+| Loại dữ liệu | Nguồn |
+|--------------|-------|
+| Giá dịch vụ | QĐ3222/QĐ-BYT (Bệnh viện Chợ Rẫy) |
+| Danh mục thuốc BHYT | Phụ lục I, Mục 14 — Thông tư 20/2022/TT-BYT + TT 37/2024 |
+| Quy tắc BHYT | Luật BHYT, 62 bệnh ưu tiên tuyến chuyên sâu |
+| Phác đồ điều trị | NCCN guidelines, thích ứng cho bối cảnh Việt Nam |
 
-```bash
+---
+
+## Cách chạy demo
+
+```
+Mở index.html trong trình duyệt. Không cần bước build.
+```
+
+---
+
+## Cách chạy test
+
+```
 node --test cost-model.test.js
 ```
 
-44 unit tests covering:
-- Smoke tests (all 7 cancers × 4 stages)
-- Coverage invariants (62-disease rule)
-- Drug-specific BHYT rates
-- Edge cases and cost reasonableness
+**44 test cases** bao gồm:
 
-## Running the demo
+- Smoke test cho tất cả 7 loại ung thư × 4 giai đoạn
+- Kiểm tra quy tắc 62 bệnh (tuyến chuyên sâu đúng tuyến = 100% chi phí dịch vụ)
+- Tỷ lệ BHYT theo từng loại thuốc (miễn dịch = 0%, đích = 50%, nội tiết = 80%)
+- Xử lý dữ liệu đầu vào không hợp lệ
+- Kiểm tra tính hợp lý của chi phí (ung thư vú giai đoạn 1: 20–200 triệu VND, giai đoạn 4: 500 triệu–3 tỷ VND)
 
-Open `index.html` in a browser. No build step required.
+---
 
-## Architecture
+## Kiến trúc
 
 ```
 ┌─────────────────────────────────────────────┐
-│  Patient UI (index.html + app.js)           │
-│  Mobile-first, voice-first, easy mode       │
+│  Giao diện Bệnh nhân (index.html + app.js)  │
+│  Mobile-first, voice-first, chế độ dễ dùng  │
 ├─────────────────────────────────────────────┤
-│  Cost Engine (cost-model.js)                │
-│  Deterministic, rule-based, no LLM          │
-│  Cancer protocols × BHYT rules × Prices     │
+│  Engine Tính toán (cost-model.js)           │
+│  Xác định, rule-based, không dùng LLM       │
+│  Phác đồ ung thư × Quy tắc BHYT × Giá      │
 ├─────────────────────────────────────────────┤
-│  Data Layer                                 │
-│  QĐ3222 prices, formulary, hospital tiers   │
+│  Tầng Dữ liệu                               │
+│  Giá QĐ3222, danh mục thuốc, hạng BV       │
 └─────────────────────────────────────────────┘
 ```
 
-## Key design decisions
+---
 
-1. **Deterministic, not probabilistic.** Cost calculations use fixed rules, not LLM inference. The LLM layer (planned for Vòng 2) handles natural language — the cost engine handles math.
+## Các quyết định thiết kế quan trọng
 
-2. **Drug-specific BHYT rates.** Most solutions use blanket percentages. We use the actual formulary: chemo at 50%, hormonal at 80%, targeted at 50%, immunotherapy at 0% (not in formulary yet).
+**1. Xác định, không phải xác suất.** Chi phí được tính bằng quy tắc cố định, không suy luận bằng LLM. Tầng LLM (dự kiến phát triển ở Vòng 2) xử lý ngôn ngữ tự nhiên — engine tính toán xử lý toán học.
 
-3. **The 62-disease rule.** Cancer patients at specialist hospitals get 100% coverage for services — but drugs still have their own rates. This distinction matters and most tools get it wrong.
+**2. Tỷ lệ BHYT theo từng loại thuốc.** Hầu hết giải pháp hiện có dùng tỷ lệ phần trăm chung chung. An Tâm dùng danh mục thực tế: hóa trị 50%, nội tiết 80%, đích 50%, miễn dịch 0% (chưa trong danh mục BHYT).
 
-## Team
+**3. Quy tắc 62 bệnh.** Bệnh nhân ung thư tại tuyến chuyên sâu được hưởng 100% chi phí dịch vụ — nhưng thuốc vẫn có tỷ lệ riêng. Phân biệt này quan trọng và hầu hết công cụ hiện có tính sai.
 
-- **Đặng Đức An** — Backend, AI architecture
-- **Bùi Trí Anh Phát** — Frontend, UX design
+---
 
-Fulbright University Vietnam · June 2026
+## Đội ngũ
+
+- **Đặng Đức An** — Backend, Kiến trúc AI
+- **Bùi Trí Anh Phát** — Frontend, Thiết kế UX
+
+Đại học Fulbright Việt Nam · Tháng 6/2026
