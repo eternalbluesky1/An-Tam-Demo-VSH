@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>An Tâm — BHYT Companion cho bệnh nhân ung thư</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --blue: #2563EB;
+  --blue-dark: #1D4ED8;
+  --blue-light: #3B82F6;
+  --blue-subtle: #EFF6FF;
+  --green: #16A34A;
+  --green-light: #22C55E;
+  --green-subtle: #F0FDF4;
+  --orange: #EA580C;
+  --orange-light: #F97316;
+  --orange-subtle: #FFF7ED;
+  --red: #DC2626;
+  --red-light: #EF4444;
+  --red-subtle: #FEF2F2;
+  --bg: #F3F4ED;
+  --text: #1E293B;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+  --border: #DADDD2;
+  --white: #FFFCF5;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-xl: 0 8px 24px rgba(0,0,0,0.07);
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  --font: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --nav-height: 68px;
+}
+
+html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══ SCREEN MANAGEMENT ═══ */
+.screen { display: none; min-height: 100vh; min-height: 100dvh; padding-bottom: calc(var(--nav-height) + 20px); }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ═══ EMERGENCY BUTTON (always visible) ═══ */
+.emergency-btn {
+  position: fixed; top: 12px; right: 12px; z-index: 1000;
+  width: 56px; height: 56px; border-radius: var(--radius-full);
+  background: var(--red); color: white; border: none;
+  font-size: 24px; cursor: pointer; box-shadow: var(--shadow-md);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: pulse-emergency 2s infinite;
+}
+.emergency-btn:active { transform: scale(0.95); }
+@keyframes pulse-emergency {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(220,38,38,0); }
+}
+
+/* ═══ BOTTOM NAVIGATION ═══ */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+  height: var(--nav-height);
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-around;
+  padding: 0 8px;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.bottom-nav.hidden { display: none; }
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 8px 16px; border: none; background: none;
+  font-family: var(--font); font-size: 11px; font-weight: 500;
+  color: var(--text-muted); cursor: pointer;
+  transition: color 0.2s;
+  min-width: 64px;
+}
+.nav-item.active { color: var(--blue); }
+.nav-item .nav-icon { font-size: 22px; line-height: 1; }
+.nav-item .nav-label { white-space: nowrap; }
+
+/* ═══ ONBOARDING SCREENS ═══ */
+.onboarding { background: linear-gradient(180deg, #EFF6FF 0%, var(--bg) 100%); justify-content: center; align-items: center; padding: 24px; text-align: center; }
+
+.welcome-logo { font-size: 64px; margin-bottom: 8px; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+.welcome-title {
+  font-size: 28px; font-weight: 800; color: var(--blue);
+  margin-bottom: 8px; line-height: 1.2;
+}
+.welcome-subtitle {
+  font-size: 16px; color: var(--text-secondary);
+  margin-bottom: 32px; max-width: 320px; margin-left: auto; margin-right: auto;
+}
+
+.mode-cards { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 380px; }
+
+.mode-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 20px 18px;
+  cursor: pointer; transition: all 0.2s ease;
+  text-align: left; display: flex; align-items: center; gap: 14px;
+}
+.mode-card:active { transform: scale(0.98); }
+.mode-card:hover { border-color: var(--blue); background: var(--blue-subtle); }
+.mode-card-icon { font-size: 40px; flex-shrink: 0; }
+.mode-card-info { flex: 1; }
+.mode-card-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.mode-card-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.4; }
+.mode-card-arrow { font-size: 20px; color: var(--text-muted); }
+
+/* Onboarding step screens */
+.onboard-step { padding: 24px; padding-top: 60px; }
+.onboard-step .step-back {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 15px; color: var(--blue); background: none; border: none;
+  font-family: var(--font); font-weight: 500; cursor: pointer;
+  margin-bottom: 20px; padding: 8px 0;
+}
+.onboard-step .step-title {
+  font-size: 24px; font-weight: 800; color: var(--text);
+  margin-bottom: 8px; line-height: 1.3;
+}
+.onboard-step .step-desc {
+  font-size: 16px; color: var(--text-secondary);
+  margin-bottom: 24px; line-height: 1.5;
+}
+
+.big-action-btn {
+  width: 100%; padding: 18px 24px; border-radius: var(--radius-lg);
+  font-family: var(--font); font-size: 18px; font-weight: 700;
+  border: none; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.big-action-btn:active { transform: scale(0.97); }
+.big-action-btn.primary { background: var(--blue); color: white; }
+.big-action-btn.primary:hover { background: var(--blue-dark); }
+.big-action-btn.secondary { background: var(--white); color: var(--text); border: 2px solid var(--border); }
+.big-action-btn.secondary:hover { border-color: var(--blue); }
+.big-action-btn.green { background: var(--green); color: white; }
+.big-action-btn.green:hover { background: #15803D; }
+
+.option-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.option-btn {
+  width: 100%; padding: 14px 18px; border-radius: var(--radius-md);
+  background: var(--white); border: 1px solid var(--border);
+  font-family: var(--font); font-size: 16px; font-weight: 600;
+  color: var(--text); cursor: pointer; transition: all 0.2s;
+  text-align: left; display: flex; align-items: center; gap: 12px;
+  min-height: 52px;
+}
+.option-btn:active { transform: scale(0.98); }
+.option-btn:hover { border-color: var(--blue); background: var(--blue-subtle); }
+.option-btn .opt-icon { font-size: 24px; flex-shrink: 0; }
+.option-btn .opt-text { flex: 1; }
+.option-btn .opt-sub { font-size: 13px; font-weight: 400; color: var(--text-secondary); display: block; margin-top: 2px; }
+
+.manual-input-group { width: 100%; margin-top: 16px; }
+.manual-input-group label { display: block; font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+.manual-input-group input, .manual-input-group select {
+  width: 100%; padding: 14px 16px; border: 2px solid var(--border);
+  border-radius: var(--radius-md); font-family: var(--font); font-size: 16px;
+  color: var(--text); background: var(--white); transition: border-color 0.2s;
+}
+.manual-input-group input:focus, .manual-input-group select:focus {
+  outline: none; border-color: var(--blue);
+}
+
+/* Getting started screen */
+.getting-started { text-align: center; padding: 40px 24px; }
+.getting-started .check-icon {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--green-subtle); color: var(--green);
+  font-size: 40px; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px; animation: popIn 0.5s ease;
+}
+@keyframes popIn { 0% { transform: scale(0); } 70% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+.getting-started h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+.getting-started p { font-size: 16px; color: var(--text-secondary); margin-bottom: 32px; }
+
+/* ═══ CHAT SCREEN ═══ */
+.chat-screen { padding-top: 0; }
+.chat-header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+}
+.chat-header-logo { font-size: 28px; }
+.chat-header-info { flex: 1; }
+.chat-header-name { font-size: 18px; font-weight: 700; color: var(--blue); }
+.chat-header-status { font-size: 12px; color: var(--green); font-weight: 500; }
+.chat-header-status::before { content: ''; display: inline-block; width: 6px; height: 6px; background: var(--green); border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+
+.chat-messages {
+  flex: 1; padding: 16px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 12px;
+  padding-bottom: 8px;
+  min-height: calc(100vh - var(--nav-height) - 140px);
+}
+
+/* Chat bubbles */
+.chat-bubble {
+  max-width: 85%; padding: 14px 18px; border-radius: var(--radius-lg);
+  font-size: 16px; line-height: 1.5; animation: slideUp 0.3s ease;
+  word-wrap: break-word;
+}
+@keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.chat-bubble.bot {
+  background: var(--white); color: var(--text);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+  align-self: flex-start;
+  box-shadow: var(--shadow-sm);
+}
+.chat-bubble.user {
+  background: var(--blue); color: white;
+  border-bottom-right-radius: 4px;
+  align-self: flex-end;
+}
+.chat-bubble .bubble-label {
+  font-size: 11px; font-weight: 600; color: var(--blue);
+  margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.03em;
+}
+.chat-bubble.user .bubble-label { color: rgba(255,255,255,0.7); }
+
+/* Typing indicator */
+.typing-indicator {
+  display: flex; gap: 4px; padding: 14px 18px; align-self: flex-start;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); border-bottom-left-radius: 4px;
+  box-shadow: var(--shadow-sm);
+}
+.typing-dot {
+  width: 8px; height: 8px; background: var(--text-muted);
+  border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* Quick question buttons */
+.quick-questions {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 0 16px 8px; justify-content: flex-start;
+}
+.quick-q-btn {
+  padding: 10px 16px; border-radius: var(--radius-full);
+  background: var(--blue-subtle); color: var(--blue);
+  border: 1px solid rgba(37,99,235,0.2);
+  font-family: var(--font); font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  white-space: nowrap;
+}
+.quick-q-btn:active { transform: scale(0.95); background: var(--blue); color: white; }
+
+/* Voice input area */
+.voice-area {
+  position: sticky; bottom: var(--nav-height);
+  background: var(--white); border-top: 1px solid var(--border);
+  padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+}
+.voice-input {
+  flex: 1; padding: 12px 16px; border: 2px solid var(--border);
+  border-radius: var(--radius-full); font-family: var(--font);
+  font-size: 16px; color: var(--text); background: var(--bg);
+  transition: border-color 0.2s;
+}
+.voice-input:focus { outline: none; border-color: var(--blue); }
+.voice-input::placeholder { color: var(--text-muted); }
+
+.mic-btn {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--blue); color: white; border: none;
+  font-size: 24px; cursor: pointer; flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+  transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+}
+.mic-btn:active { transform: scale(0.9); }
+.mic-btn.recording {
+  background: var(--red);
+  animation: pulse-recording 1s infinite;
+}
+@keyframes pulse-recording {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(220,38,38,0); }
+}
+
+/* Cost calc option buttons in chat */
+.cost-option-btn {
+  display: block; width: 100%; padding: 14px 18px;
+  background: var(--white); border: 2px solid var(--border);
+  border-radius: var(--radius-md); font-family: var(--font);
+  font-size: 15px; font-weight: 600; color: var(--text);
+  cursor: pointer; transition: all 0.2s; text-align: left;
+  margin-bottom: 8px;
+}
+.cost-option-btn:hover { border-color: var(--blue); background: var(--blue-subtle); }
+.cost-option-btn:active { transform: scale(0.98); }
+
+/* ═══ BHYT CARD SCREEN ═══ */
+.bhyt-screen { padding: 24px 16px; }
+.bhyt-header { text-align: center; padding: 20px 0; }
+.bhyt-header h2 { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.bhyt-header p { font-size: 15px; color: var(--text-secondary); }
+
+.bhyt-card-display {
+  background: var(--blue);
+  color: white; border-radius: var(--radius-lg); padding: 24px 20px;
+  margin-bottom: 20px; position: relative; overflow: hidden;
+}
+.bhyt-card-display::before {
+  content: ''; position: absolute; top: -40px; right: -40px;
+  width: 120px; height: 120px; border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+}
+.bhyt-card-display::after {
+  content: ''; position: absolute; bottom: -20px; left: -20px;
+  width: 80px; height: 80px; border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.bhyt-card-logo { font-size: 14px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 16px; opacity: 0.9; }
+.bhyt-card-number { font-size: 22px; font-weight: 800; letter-spacing: 0.08em; margin-bottom: 16px; }
+.bhyt-card-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px; }
+.bhyt-card-info dt { opacity: 0.7; font-weight: 400; }
+.bhyt-card-info dd { font-weight: 700; }
+
+.bhyt-actions { display: flex; flex-direction: column; gap: 12px; }
+.bhyt-action-btn {
+  display: flex; align-items: center; gap: 12px; padding: 16px 20px;
+  background: var(--white); border: 2px solid var(--border);
+  border-radius: var(--radius-md); font-family: var(--font);
+  font-size: 15px; font-weight: 600; color: var(--text);
+  cursor: pointer; transition: all 0.2s;
+}
+.bhyt-action-btn:hover { border-color: var(--blue); background: var(--blue-subtle); }
+.bhyt-action-btn .action-icon { font-size: 24px; }
+
+.no-card-state { text-align: center; padding: 40px 24px; }
+.no-card-state .no-card-icon { font-size: 48px; margin-bottom: 12px; }
+.no-card-state h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.no-card-state p { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+
+/* ═══ HELP SCREEN ═══ */
+.help-screen { padding: 24px 16px; }
+.help-header { text-align: center; padding: 20px 0; }
+.help-header h2 { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+.help-header p { font-size: 15px; color: var(--text-secondary); }
+
+.help-emergency-card {
+  background: var(--red);
+  color: white; border-radius: var(--radius-lg); padding: 20px;
+  margin-bottom: 20px; text-align: center;
+}
+.help-emergency-card h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.help-emergency-card p { font-size: 15px; opacity: 0.9; margin-bottom: 16px; line-height: 1.5; }
+.help-emergency-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.help-emergency-btn {
+  padding: 12px 20px; border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3);
+  font-family: var(--font); font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.help-emergency-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.3); }
+
+.help-section { margin-bottom: 24px; }
+.help-section-title {
+  font-size: 16px; font-weight: 700; color: var(--text);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+
+.org-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 16px;
+  margin-bottom: 10px; transition: all 0.2s;
+}
+.org-card:active { transform: scale(0.98); }
+.org-card-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+.org-card-icon { font-size: 28px; flex-shrink: 0; }
+.org-card-name { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; }
+.org-card-focus { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 2px; }
+.org-card-contact {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 14px; color: var(--text-secondary); margin-top: 6px;
+}
+.org-card-contact a { color: var(--blue); text-decoration: none; font-weight: 600; }
+.org-card-priority {
+  display: inline-block; padding: 2px 8px; border-radius: var(--radius-full);
+  font-size: 11px; font-weight: 700; margin-top: 6px;
+}
+.org-card-priority.recommended { background: var(--green-subtle); color: var(--green); }
+.org-card-priority.pediatric { background: var(--orange-subtle); color: var(--orange); }
+.org-card-priority.lodging { background: #F5F3FF; color: #7C3AED; }
+
+/* ═══ SUPPORT PROFILE SCREEN ═══ */
+.profile-screen { padding: 24px 16px; }
+.profile-progress {
+  display: flex; align-items: center; gap: 4px;
+  margin-bottom: 24px; padding: 0 8px;
+}
+.profile-progress-dot {
+  flex: 1; height: 4px; border-radius: 2px;
+  background: var(--border); transition: background 0.3s;
+}
+.profile-progress-dot.active { background: var(--blue); }
+.profile-progress-dot.done { background: var(--green); }
+
+.profile-step { animation: slideUp 0.3s ease; }
+.profile-step h2 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.profile-step .step-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+
+.consent-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px;
+}
+.consent-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--blue); }
+.consent-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 8px; }
+.consent-card ul { list-style: none; padding: 0; margin-bottom: 12px; }
+.consent-card li { font-size: 14px; color: var(--text-secondary); padding: 4px 0; padding-left: 24px; position: relative; }
+.consent-card li::before { content: '•'; position: absolute; left: 8px; color: var(--blue); font-weight: 700; }
+
+.form-field { margin-bottom: 16px; }
+.form-field label { display: block; font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.form-field label .required { color: var(--red); }
+.form-field input, .form-field select, .form-field textarea {
+  width: 100%; padding: 14px 16px; border: 2px solid var(--border);
+  border-radius: var(--radius-md); font-family: var(--font);
+  font-size: 16px; color: var(--text); background: var(--white);
+  transition: border-color 0.2s;
+}
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+  outline: none; border-color: var(--blue);
+}
+.form-field .form-hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.radio-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.radio-card { position: relative; }
+.radio-card input { position: absolute; opacity: 0; width: 0; height: 0; }
+.radio-card label {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 14px 12px; border: 2px solid var(--border);
+  border-radius: var(--radius-md); cursor: pointer;
+  transition: all 0.2s; text-align: center;
+  font-size: 14px; font-weight: 600;
+}
+.radio-card input:checked + label { border-color: var(--blue); background: var(--blue-subtle); color: var(--blue); }
+
+/* Document upload area */
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.upload-item {
+  background: var(--white); border: 2px dashed var(--border);
+  border-radius: var(--radius-md); padding: 20px 12px;
+  text-align: center; cursor: pointer; transition: all 0.2s;
+}
+.upload-item:hover { border-color: var(--blue); background: var(--blue-subtle); }
+.upload-item.uploaded { border-color: var(--green); background: var(--green-subtle); border-style: solid; }
+.upload-item .upload-icon { font-size: 32px; margin-bottom: 6px; }
+.upload-item .upload-label { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.upload-item .upload-status { font-size: 11px; color: var(--green); font-weight: 600; margin-top: 4px; }
+
+/* Profile preview */
+.profile-preview {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px;
+}
+.profile-preview h3 { font-size: 18px; font-weight: 700; color: var(--blue); margin-bottom: 16px; text-align: center; }
+.preview-section { margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.preview-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.preview-section-title { font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.preview-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 14px; }
+.preview-row .label { color: var(--text-secondary); }
+.preview-row .value { font-weight: 600; color: var(--text); }
+
+/* Share screen */
+.share-org-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.share-org-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; background: var(--white);
+  border: 2px solid var(--border); border-radius: var(--radius-md);
+  cursor: pointer; transition: all 0.2s;
+}
+.share-org-item.selected { border-color: var(--blue); background: var(--blue-subtle); }
+.share-org-item .org-icon { font-size: 24px; }
+.share-org-item .org-name { font-size: 14px; font-weight: 600; flex: 1; }
+.share-org-item .org-check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px; color: transparent; transition: all 0.2s; }
+.share-org-item.selected .org-check { background: var(--blue); border-color: var(--blue); color: white; }
+
+/* ═══ COST RESULTS SCREEN ═══ */
+.results-screen { padding: 24px 16px; }
+.results-hero {
+  background: var(--blue);
+  color: white; border-radius: var(--radius-lg); padding: 24px 20px;
+  text-align: center; margin-bottom: 20px; position: relative; overflow: hidden;
+}
+.results-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 100% 0%, rgba(255,255,255,0.15) 0%, transparent 60%);
+}
+.results-conf-badge {
+  display: inline-block; padding: 4px 12px; border-radius: var(--radius-full);
+  font-size: 12px; font-weight: 700; margin-bottom: 12px;
+  background: rgba(255,255,255,0.2); position: relative; z-index: 1;
+}
+.results-hero-label { font-size: 14px; opacity: 0.85; margin-bottom: 4px; position: relative; z-index: 1; }
+.results-hero-amount {
+  font-size: clamp(28px, 7vw, 40px); font-weight: 800;
+  margin-bottom: 4px; position: relative; z-index: 1;
+  animation: countUp 0.6s ease;
+}
+@keyframes countUp { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+.results-hero-sub { font-size: 15px; opacity: 0.85; margin-bottom: 20px; position: relative; z-index: 1; }
+
+.results-bar { position: relative; z-index: 1; }
+.results-bar-track { height: 14px; background: rgba(255,255,255,0.2); border-radius: 7px; overflow: hidden; display: flex; }
+.results-bar-bhyt { background: var(--green-light); transition: width 0.8s ease; }
+.results-bar-patient { background: var(--orange-light); transition: width 0.8s ease; }
+.results-bar-legend { display: flex; justify-content: space-between; margin-top: 10px; font-size: 13px; }
+.results-bar-legend span { display: flex; align-items: center; gap: 4px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.legend-dot.bhyt { background: var(--green-light); }
+.legend-dot.patient { background: var(--orange-light); }
+
+.breakdown-category {
+  background: var(--white); border-radius: var(--radius-md);
+  border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden;
+}
+.breakdown-cat-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; background: var(--bg); border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+.breakdown-cat-title { font-size: 14px; font-weight: 700; white-space: nowrap; }
+.breakdown-cat-amounts { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.breakdown-cat-total { font-size: 13px; font-weight: 800; color: var(--blue); }
+.breakdown-cat-bhyt { font-size: 12px; font-weight: 600; color: var(--green); }
+.breakdown-cat-patient { font-size: 12px; font-weight: 600; color: var(--red); }
+
+.breakdown-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px; font-size: 13px; border-bottom: 1px solid var(--border);
+}
+.breakdown-item:last-child { border-bottom: none; }
+.breakdown-item-left { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.breakdown-item-name { color: var(--text-secondary); font-size: 13px; }
+.breakdown-item-tag { margin-top: 1px; }
+.breakdown-item-right { display: flex; align-items: center; gap: 8px; }
+.breakdown-item-prices { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+.breakdown-item-original { font-size: 12px; color: var(--text-muted); text-decoration: line-through; }
+.breakdown-item-bhyt { font-size: 11px; color: var(--green); font-weight: 600; }
+.breakdown-item-patient { font-size: 13px; font-weight: 700; color: var(--text); }
+.bhyt-tag {
+  font-size: 11px; font-weight: 700; padding: 2px 8px;
+  border-radius: var(--radius-full); white-space: nowrap;
+}
+.bhyt-tag.covered { background: var(--green-subtle); color: var(--green); }
+.bhyt-tag.partial { background: var(--orange-subtle); color: var(--orange); }
+.bhyt-tag.not { background: var(--red-subtle); color: var(--red); }
+
+/* Summary box */
+.summary-box {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 16px; margin-bottom: 16px;
+}
+.summary-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; font-size: 15px;
+}
+.summary-row.total {
+  border-top: 2px solid var(--border); margin-top: 8px; padding-top: 12px;
+  font-weight: 800; font-size: 17px;
+}
+.summary-row .label { color: var(--text-secondary); }
+.summary-row .value { font-weight: 700; }
+.summary-row .value.bhyt { color: var(--green); }
+.summary-row .value.patient { color: var(--orange); }
+
+/* Action buttons */
+.action-row { display: flex; gap: 10px; margin-bottom: 16px; }
+.action-btn {
+  flex: 1; padding: 14px 16px; border-radius: var(--radius-md);
+  font-family: var(--font); font-size: 15px; font-weight: 700;
+  border: none; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.action-btn:active { transform: scale(0.97); }
+.action-btn.blue { background: var(--blue); color: white; }
+.action-btn.outline { background: var(--white); color: var(--blue); border: 2px solid var(--blue); }
+.action-btn.green { background: var(--green); color: white; }
+
+/* Notes */
+.notes-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 16px; margin-bottom: 16px;
+}
+.notes-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.notes-card .note-item {
+  font-size: 13px; color: var(--text-secondary); padding: 4px 0;
+  padding-left: 20px; position: relative; line-height: 1.5;
+}
+.notes-card .note-item::before { content: '📋'; position: absolute; left: 0; font-size: 12px; }
+
+/* ═══ UTILITIES ═══ */
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+
+/* ═══ SCENARIO CARDS ═══ */
+.scenario-cards { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.scenario-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 16px; cursor: pointer;
+  transition: all 0.2s; position: relative; overflow: hidden;
+}
+.scenario-card:active { transform: scale(0.98); }
+.scenario-card.best { border-left: 4px solid var(--green); }
+.scenario-card.normal { border-left: 4px solid var(--orange); }
+.scenario-card.worst { border-left: 4px solid var(--red); }
+.scenario-label {
+  font-size: 12px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; margin-bottom: 4px;
+}
+.scenario-card.best .scenario-label { color: var(--green); }
+.scenario-card.normal .scenario-label { color: var(--orange); }
+.scenario-card.worst .scenario-label { color: var(--red); }
+.scenario-amount {
+  font-size: 24px; font-weight: 800; color: var(--text);
+}
+.scenario-desc { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+.scenario-patient { font-size: 13px; color: var(--text-secondary); margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(0,0,0,0.06); }
+
+/* ═══ PROGRESSIVE DISCLOSURE ═══ */
+.reveal-section {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); margin-bottom: 12px; overflow: hidden;
+}
+.reveal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px; cursor: pointer; transition: background 0.2s;
+}
+.reveal-header:active { background: var(--bg); }
+.reveal-header .reveal-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.reveal-header .reveal-chevron {
+  font-size: 18px; color: var(--text-muted); transition: transform 0.3s;
+}
+.reveal-header.open .reveal-chevron { transform: rotate(180deg); }
+.reveal-body { padding: 0 16px 16px; }
+.reveal-body.open { animation: slideUp 0.3s ease; }
+
+/* ═══ CONFIRMATION DIALOG ═══ */
+.confirm-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 2000; display: flex; align-items: flex-end; justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.confirm-dialog {
+  background: var(--white); border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  width: 100%; max-width: 480px; padding: 24px 20px 28px;
+  animation: slideUp 0.3s ease;
+}
+.confirm-dialog h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.confirm-dialog p { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+.confirm-actions { display: flex; gap: 10px; }
+.confirm-actions button { flex: 1; }
+
+/* ═══ HOME DASHBOARD ═══ */
+.home-screen { padding: 0; }
+.home-greeting {
+  padding: 20px 20px 0;
+}
+.home-greeting h1 {
+  font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 2px;
+}
+.home-greeting p {
+  font-size: 14px; color: var(--text-secondary);
+}
+
+/* Quick action cards on home */
+.home-quick-actions {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  padding: 16px 20px;
+}
+.home-action-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 18px 14px;
+  cursor: pointer; transition: all 0.2s; text-align: center;
+}
+.home-action-card:active { transform: scale(0.97); }
+.home-action-card:hover { border-color: var(--blue); background: var(--blue-subtle); }
+.home-action-icon {
+  width: 44px; height: 44px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px; font-size: 22px;
+}
+.home-action-icon.blue { background: var(--blue-subtle); color: var(--blue); }
+.home-action-icon.green { background: var(--green-subtle); color: var(--green); }
+.home-action-icon.orange { background: var(--orange-subtle); color: var(--orange); }
+.home-action-icon.red { background: var(--red-subtle); color: var(--red); }
+.home-action-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.home-action-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.3; }
+
+/* BHYT card preview on home */
+.home-bhyt-preview {
+  margin: 0 20px 16px;
+  background: var(--blue); color: white;
+  border-radius: var(--radius-md); padding: 16px;
+  display: flex; align-items: center; gap: 14px;
+}
+.home-bhyt-icon { font-size: 28px; }
+.home-bhyt-info { flex: 1; }
+.home-bhyt-name { font-size: 14px; font-weight: 700; }
+.home-bhyt-detail { font-size: 12px; opacity: 0.85; }
+.home-bhyt-arrow { font-size: 18px; opacity: 0.6; }
+
+/* Hospital info card on home */
+.home-hospital-card {
+  margin: 0 20px 16px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.home-hospital-icon { font-size: 24px; }
+.home-hospital-info { flex: 1; }
+.home-hospital-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.home-hospital-tier { font-size: 11px; color: var(--text-secondary); }
+
+/* Chat link on home */
+.home-chat-link {
+  margin: 0 20px 20px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: all 0.2s;
+}
+.home-chat-link:active { transform: scale(0.98); }
+.home-chat-link:hover { border-color: var(--blue); }
+.home-chat-icon { font-size: 24px; }
+.home-chat-info { flex: 1; }
+.home-chat-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.home-chat-desc { font-size: 12px; color: var(--text-secondary); }
+
+/* ═══ STANDALONE COST CALC SCREEN ═══ */
+.calc-screen { padding: 20px; }
+.calc-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+}
+.calc-header .step-back { margin-bottom: 0; padding: 0; }
+.calc-header h2 { font-size: 20px; font-weight: 800; color: var(--text); flex: 1; }
+
+/* Step indicator */
+.calc-steps {
+  display: flex; gap: 6px; margin-bottom: 24px; padding: 0 4px;
+}
+.calc-step-dot {
+  flex: 1; height: 3px; border-radius: 2px; background: var(--border); transition: background 0.3s;
+}
+.calc-step-dot.active { background: var(--blue); }
+.calc-step-dot.done { background: var(--green); }
+
+.calc-step-title {
+  font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 4px;
+}
+.calc-step-desc {
+  font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;
+}
+
+/* Cancer type grid for calc */
+.calc-cancer-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.calc-cancer-item {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px 12px;
+  cursor: pointer; transition: all 0.2s; text-align: center;
+}
+.calc-cancer-item:active { transform: scale(0.97); }
+.calc-cancer-item:hover { border-color: var(--blue); background: var(--blue-subtle); }
+.calc-cancer-item.selected { border-color: var(--blue); background: var(--blue-subtle); }
+.calc-cancer-icon { font-size: 28px; margin-bottom: 4px; }
+.calc-cancer-name { font-size: 13px; font-weight: 600; color: var(--text); }
+
+/* Stage selection */
+.calc-stage-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.calc-stage-item {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px; cursor: pointer;
+  transition: all 0.2s; text-align: center;
+}
+.calc-stage-item:active { transform: scale(0.97); }
+.calc-stage-item:hover { border-color: var(--blue); background: var(--blue-subtle); }
+.calc-stage-item.selected { border-color: var(--blue); background: var(--blue-subtle); }
+.calc-stage-num { font-size: 18px; font-weight: 800; color: var(--blue); margin-bottom: 2px; }
+.calc-stage-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.calc-stage-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+/* Hospital dropdown */
+.calc-dropdown {
+  width: 100%; padding: 14px 16px; border: 1px solid var(--border);
+  border-radius: var(--radius-md); font-family: var(--font);
+  font-size: 15px; color: var(--text); background: var(--white);
+  appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+}
+.calc-dropdown:focus { outline: none; border-color: var(--blue); }
+.calc-dropdown-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block; }
+
+/* Route selection */
+.calc-route-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.calc-route-item {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 16px; cursor: pointer;
+  transition: all 0.2s; text-align: center;
+}
+.calc-route-item:active { transform: scale(0.97); }
+.calc-route-item:hover { border-color: var(--blue); background: var(--blue-subtle); }
+.calc-route-item.selected { border-color: var(--blue); background: var(--blue-subtle); }
+.calc-route-icon { font-size: 28px; margin-bottom: 4px; }
+.calc-route-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.calc-route-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+/* Card type selection */
+.calc-card-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.calc-card-item {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px; cursor: pointer;
+  transition: all 0.2s; text-align: center;
+}
+.calc-card-item:active { transform: scale(0.97); }
+.calc-card-item:hover { border-color: var(--blue); background: var(--blue-subtle); }
+.calc-card-item.selected { border-color: var(--blue); background: var(--blue-subtle); }
+.calc-card-code { font-size: 20px; font-weight: 800; color: var(--blue); }
+.calc-card-name { font-size: 12px; font-weight: 600; color: var(--text); margin-top: 2px; }
+.calc-card-rate { font-size: 11px; color: var(--green); font-weight: 600; margin-top: 2px; }
+
+/* Cost calc bottom nav */
+.calc-nav {
+  display: flex; gap: 10px; margin-top: 24px;
+}
+.calc-nav button { flex: 1; }
+
+/* ═══ EASY MODE ═══ */
+body.easy-mode {
+  font-size: 20px;
+  --touch-min: 72px;
+}
+
+body.easy-mode .bottom-nav {
+  height: 72px;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+body.easy-mode .nav-item {
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  min-height: 64px;
+}
+
+body.easy-mode .nav-item .nav-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+body.easy-mode .nav-item .nav-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+body.easy-mode .nav-item.active .nav-label {
+  color: var(--primary);
+}
+
+body.easy-mode .mode-card {
+  min-height: 72px;
+  padding: 20px;
+  border-radius: 14px;
+}
+
+body.easy-mode .mode-card .mode-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+body.easy-mode .mode-card .mode-desc {
+  font-size: 14px;
+}
+
+body.easy-mode .option-btn {
+  min-height: var(--touch-min);
+  padding: 20px;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 14px;
+}
+
+body.easy-mode .chat-bubble {
+  font-size: 18px;
+  padding: 16px 20px;
+  border-radius: 14px;
+}
+
+body.easy-mode .chat-input-area {
+  padding: 16px;
+}
+
+body.easy-mode .chat-input-area input {
+  font-size: 18px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  min-height: 56px;
+}
+
+body.easy-mode .mic-btn {
+  width: 68px;
+  height: 68px;
+  font-size: 30px;
+  border-radius: 50%;
+}
+
+body.easy-mode .quick-q-btn {
+  font-size: 16px;
+  padding: 14px 20px;
+  min-height: 52px;
+  border-radius: 14px;
+}
+
+body.easy-mode .cost-option-btn {
+  font-size: 18px;
+  padding: 20px;
+  min-height: 72px;
+  border-radius: 14px;
+}
+
+body.easy-mode .results-hero-amount {
+  font-size: clamp(36px, 10vw, 56px);
+}
+
+body.easy-mode .summary-row {
+  font-size: 18px;
+  padding: 14px 0;
+}
+
+body.easy-mode .summary-row.total {
+  font-size: 22px;
+  padding: 18px 0;
+}
+
+body.easy-mode .calc-card {
+  padding: 20px;
+  border-radius: 14px;
+  min-height: 64px;
+}
+
+body.easy-mode .calc-step-title {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+body.easy-mode .calc-step-desc {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+body.easy-mode .big-action-btn {
+  min-height: 60px;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 14px;
+}
+
+body.easy-mode .home-quick-action {
+  min-height: 64px;
+  padding: 18px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+body.easy-mode .home-quick-action .quick-icon {
+  font-size: 28px;
+}
+
+body.easy-mode .home-bhyt-preview,
+body.easy-mode .home-hospital-card {
+  padding: 18px;
+  border-radius: 14px;
+}
+
+body.easy-mode .help-emergency-btn {
+  min-height: 64px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 14px;
+}
+
+body.easy-mode .profile-section {
+  padding: 18px;
+  border-radius: 14px;
+  min-height: 64px;
+}
+
+body.easy-mode .profile-section-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+body.easy-mode .upload-item {
+  min-height: 64px;
+  padding: 18px;
+  border-radius: 14px;
+}
+
+body.easy-mode .org-card {
+  padding: 18px;
+  border-radius: 14px;
+  min-height: 64px;
+}
+
+body.easy-mode .org-card-name {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+body.easy-mode .emergency-btn {
+  min-height: 72px;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 14px;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 400px) {
+  .radio-cards { grid-template-columns: 1fr; }
+  .upload-grid { grid-template-columns: 1fr; }
+  .help-emergency-actions { flex-direction: column; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ EMERGENCY BUTTON (always visible) ═══ -->
+<button class="emergency-btn" id="emergencyBtn" title="Cấp cứu" onclick="handleEmergency()">🚨</button>
+
+<div class="screen onboarding active" id="screenWelcome">
+  <div class="welcome-logo">💙</div>
+  <h1 class="welcome-title">Chào mừng đến An Tâm</h1>
+  <p class="welcome-subtitle">Bạn muốn sử dụng An Tâm như thế nào?</p>
+  <div class="mode-cards">
+    <div class="mode-card" onclick="selectMode('easy')">
+      <div class="mode-card-icon">🎤</div>
+      <div class="mode-card-info">
+        <div class="mode-card-title">DỄ SỬ DỤNG</div>
+        <div class="mode-card-desc">Chỉ cần nói, không cần bấm nhiều. Phù hợp cho người lớn tuổi.</div>
+      </div>
+      <div class="mode-card-arrow">›</div>
+    </div>
+    <div class="mode-card" onclick="selectMode('normal')">
+      <div class="mode-card-icon">📱</div>
+      <div class="mode-card-info">
+        <div class="mode-card-title">BÌNH THƯỜNG</div>
+        <div class="mode-card-desc">Giao diện đầy đủ tính năng. Phù hợp cho người quen sử dụng điện thoại.</div>
+      </div>
+      <div class="mode-card-arrow">›</div>
+    </div>
+  </div>
+</div>
+
+<div class="screen onboarding" id="screenCardScan">
+  <div class="onboard-step">
+    <button class="step-back" onclick="goToScreen('screenWelcome')">← Quay lại</button>
+    <h1 class="step-title">Vui lòng quét thẻ BHYT của bạn</h1>
+    <p class="step-desc">Thẻ BHYT giúp An Tâm tính chính xác hơn chi phí điều trị.</p>
+    <div class="option-list">
+      <button class="big-action-btn primary" onclick="simulateScan()">
+        📷 QUÉT THẺ BHYT
+      </button>
+      <div style="text-align:center; color:var(--text-muted); font-size:14px; padding:8px 0;">— hoặc —</div>
+      <button class="big-action-btn secondary" onclick="showManualInput()">
+        ⌨️ Nhập thủ công
+      </button>
+      <button class="big-action-btn secondary" onclick="skipCard()">
+        ❌ Không có thẻ
+      </button>
+    </div>
+    <div class="manual-input-group" id="manualInputGroup" style="display:none;">
+      <label>Số thẻ BHYT</label>
+      <input type="text" id="manualBhytNumber" placeholder="VD: GD4010012345678" maxlength="15">
+      <label style="margin-top:12px;">Mã thẻ</label>
+      <select id="manualBhytCode">
+        <option value="CC">CC — Công chức, viên chức (100%)</option>
+        <option value="TE">TE — Trẻ em &lt;6 tuổi (100%)</option>
+        <option value="CK">CK — Chiến sĩ công an, quân đội (100%)</option>
+        <option value="CB">CB — Cán bộ cấp xã (100%)</option>
+        <option value="KC">KC — Người có công với cách mạng (100%)</option>
+        <option value="HN">HN — Bệnh hiểm nghèo (100%)</option>
+        <option value="DT">DT — Dân tộc thiểu số vùng khó khăn (100%)</option>
+        <option value="DK">DK — Hộ cận nghèo (80%)</option>
+        <option value="XD">XD — Hộ nghèo (100%)</option>
+        <option value="BT">BT — Bảo trợ xã hội (100%)</option>
+        <option value="TS">TS — Học sinh, sinh viên (80%)</option>
+        <option value="AK">AK — Hộ gia đình thành viên thứ nhất (80%)</option>
+        <option value="CT">CT — Hộ gia đình thành viên khác (80%)</option>
+      </select>
+      <button class="big-action-btn primary mt-16" onclick="saveManualCard()">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen onboarding" id="screenHospital">
+  <div class="onboard-step">
+    <button class="step-back" onclick="goToScreen('screenCardScan')">← Quay lại</button>
+    <h1 class="step-title">Bạn đang điều trị tại bệnh viện không?</h1>
+    <p class="step-desc">Nếu đang ở bệnh viện, An Tâm sẽ tính chi phí chính xác hơn.</p>
+    <div class="option-list">
+      <button class="option-btn" onclick="selectHospitalYes()">
+        <span class="opt-icon">🏥</span>
+        <span class="opt-text">Có, tôi đang ở viện<span class="opt-sub">Chọn bệnh viện đang điều trị</span></span>
+      </button>
+      <button class="option-btn" onclick="selectHospitalNo()">
+        <span class="opt-icon">🏠</span>
+        <span class="opt-text">Không, tôi chưa nhập viện<span class="opt-sub">Bỏ qua bước này</span></span>
+      </button>
+    </div>
+    <div id="hospitalList" style="display:none; margin-top:20px;">
+      <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">Bạn đang ở bệnh viện nào?</h3>
+      <div class="option-list" id="hospitalOptions"></div>
+    </div>
+  </div>
+</div>
+
+<div class="screen onboarding" id="screenGettingStarted">
+  <div class="getting-started">
+    <div class="check-icon">✓</div>
+    <h2>Xong rồi!</h2>
+    <p>Bạn có thể hỏi An Tâm bất cứ lúc nào.</p>
+    <button class="big-action-btn primary" onclick="goToMainApp()" style="max-width:300px; margin:0 auto;">
+      🏠 Về trang chủ
+    </button>
+    <button class="big-action-btn secondary mt-16" onclick="startChat()" style="max-width:300px; margin:0 auto;">
+      💬 Hỏi An Tâm ngay
+    </button>
+  </div>
+</div>
+
+<div class="screen home-screen" id="screenHome" style="display:none;">
+  <div class="home-greeting">
+    <h1 id="homeGreeting">Xin chào! 👋</h1>
+    <p>An Tâm sẵn sàng giúp bạn</p>
+  </div>
+
+  <div class="home-quick-actions">
+    <div class="home-action-card" onclick="startCostCalcWizard()">
+      <div class="home-action-icon blue">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div class="home-action-title">Tính chi phí</div>
+      <div class="home-action-desc">Ước tính chi phí điều trị</div>
+    </div>
+    <div class="home-action-card" onclick="startSupportProfile()">
+      <div class="home-action-icon green">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <div class="home-action-title">Hồ sơ hỗ trợ</div>
+      <div class="home-action-desc">Tạo hồ sơ gửi tổ chức</div>
+    </div>
+    <div class="home-action-card" onclick="switchTab('help')">
+      <div class="home-action-icon orange">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </div>
+      <div class="home-action-title">Giúp đỡ</div>
+      <div class="home-action-desc">Tổ chức & cấp cứu</div>
+    </div>
+    <div class="home-action-card" onclick="switchTab('profile')">
+      <div class="home-action-icon red">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg>
+      </div>
+      <div class="home-action-title">Thẻ BHYT</div>
+      <div class="home-action-desc">Xem thông tin thẻ</div>
+    </div>
+  </div>
+
+  <div id="homeBhytPreview"></div>
+  <div id="homeHospitalPreview"></div>
+
+  <div class="home-chat-link" onclick="switchTab('chat')">
+    <div class="home-chat-icon">💬</div>
+    <div class="home-chat-info">
+      <div class="home-chat-title">Hỏi An Tâm</div>
+      <div class="home-chat-desc">Đặt câu hỏi về BHYT, giấy tờ, thuốc...</div>
+    </div>
+    <div class="home-chat-arrow" style="font-size:18px; color:var(--text-muted);">›</div>
+  </div>
+</div>
+
+<div class="screen calc-screen" id="screenCalc" style="display:none;">
+  <div id="calcContent"></div>
+</div>
+
+<div class="screen chat-screen" id="screenChat" style="display:none;">
+  <div class="chat-header">
+    <div class="chat-header-logo">💙</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">An Tâm</div>
+      <div class="chat-header-status">Đang trực tuyến</div>
+    </div>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="quick-questions" id="quickQuestions">
+    <button class="quick-q-btn" onclick="askQuestion('BHYT trả bao nhiêu cho đợt điều trị?')">BHYT trả bao nhiêu?</button>
+    <button class="quick-q-btn" onclick="askQuestion('Tôi cần giấy tờ gì để đi bệnh viện khác?')">Cần giấy tờ gì?</button>
+    <button class="quick-q-btn" onclick="askQuestion('Thuốc của tôi có được BHYT trả không?')">Thuốc có được BHYT trả?</button>
+  </div>
+  <div class="voice-area">
+    <input type="text" class="voice-input" id="chatInput" placeholder="Nhập câu hỏi..." onkeypress="if(event.key==='Enter')sendMessage()">
+    <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎤</button>
+  </div>
+</div>
+
+<div class="screen bhyt-screen" id="screenBhyt" style="display:none;">
+  <div class="bhyt-header">
+    <h2>💳 Thẻ BHYT của bạn</h2>
+    <p>Xem thông tin và kiểm tra BHYT trả bao nhiêu</p>
+  </div>
+  <div id="bhytCardContent"></div>
+</div>
+
+<div class="screen help-screen" id="screenHelp" style="display:none;">
+  <div class="help-header">
+    <h2>📞 Giúp đỡ</h2>
+    <p>Tìm tổ chức hỗ trợ và thông tin khẩn cấp</p>
+  </div>
+
+  <div class="help-emergency-card">
+    <h3>🚨 Cấp cứu</h3>
+    <p>Cấp cứu được BHYT trả 100% tại BẤT KỲ bệnh viện nào. Gọi 115 ngay nhé!</p>
+    <div class="help-emergency-actions">
+      <button class="help-emergency-btn" onclick="callNumber('115')">📞 Gọi 115</button>
+      <button class="help-emergency-btn" onclick="showNearestHospital()">🏥 BV gần nhất</button>
+      <button class="help-emergency-btn" onclick="callFamily()">👨‍👩‍👧 Gọi người thân</button>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <h3 class="help-section-title">🏢 Tổ chức hỗ trợ bệnh nhân ung thư</h3>
+    <div id="orgDirectory"></div>
+  </div>
+</div>
+
+<div class="screen profile-screen" id="screenProfile" style="display:none;">
+  <div class="profile-progress" id="profileProgress"></div>
+  <div id="profileContent"></div>
+</div>
+
+<div class="screen results-screen" id="screenResults" style="display:none;">
+  <div id="resultsContent"></div>
+</div>
+
+<!-- ═══ BOTTOM NAVIGATION ═══ -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
+    <span class="nav-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </span>
+    <span class="nav-label">Trang chủ</span>
+  </button>
+  <button class="nav-item" data-tab="calc" onclick="switchTab('calc')">
+    <span class="nav-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="8" y1="10" x2="8" y2="10.01"/><line x1="12" y1="10" x2="12" y2="10.01"/><line x1="16" y1="10" x2="16" y2="10.01"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="8" y1="18" x2="8" y2="18.01"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
+    </span>
+    <span class="nav-label">Chi phí</span>
+  </button>
+  <button class="nav-item" data-tab="profile" onclick="switchTab('profile')">
+    <span class="nav-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    </span>
+    <span class="nav-label">Hồ sơ</span>
+  </button>
+  <button class="nav-item" data-tab="help" onclick="switchTab('help')">
+    <span class="nav-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </span>
+    <span class="nav-label">Giúp đỡ</span>
+  </button>
+</nav>
+
+<script src="cost-model.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

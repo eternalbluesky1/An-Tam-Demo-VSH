@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, initial-scale=1.0">
+  <title>Login — Healthcare App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #3B9AB8;
+      --white: #FFFFFF;
+      --black: #000000;
+      --text-secondary: #878787;
+      --border: #B6B6B8;
+      --border-light: #E5E5E5;
+      --left-panel-bg: #869CA3;
+      --font: 'Inter', -apple-system, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--white);
+      color: var(--black);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ═══ MAIN CONTAINER ═══ */
+    .login-container {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* ═══ LEFT PANEL (Image) ═══ */
+    .left-panel {
+      width: 710px;
+      height: 100%;
+      background: var(--left-panel-bg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left-panel-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.8;
+    }
+
+    .logo-container {
+      position: absolute;
+      top: 113px;
+      left: 188px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .logo-icon {
+      width: 66px;
+      height: 66px;
+    }
+
+    .logo-text {
+      font-size: 72.6px;
+      font-weight: 500;
+      color: var(--white);
+    }
+
+    /* Feature cards on left panel */
+    .feature-cards {
+      position: absolute;
+      bottom: 80px;
+      left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 10;
+    }
+
+    .feature-card {
+      width: 355px;
+      padding: 14.9px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(17.4px);
+      border-radius: 12.4px;
+      display: flex;
+      align-items: center;
+      gap: 9.9px;
+    }
+
+    .feature-card-icon {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+    }
+
+    .feature-card-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5px;
+    }
+
+    .feature-card-title {
+      font-size: 22.3px;
+      font-weight: 500;
+      color: var(--white);
+      text-align: center;
+    }
+
+    .feature-card-subtitle {
+      font-size: 19.9px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 150%;
+    }
+
+    /* Second feature card (larger) */
+    .feature-card-large {
+      width: 425px;
+      padding: 17.8px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(20.8px);
+      border-radius: 14.9px;
+      display: flex;
+      align-items: center;
+      gap: 11.9px;
+    }
+
+    .feature-card-large .feature-card-icon {
+      width: 62.4px;
+      height: 62.4px;
+    }
+
+    .feature-card-large .feature-card-title {
+      font-size: 26.7px;
+    }
+
+    .feature-card-large .feature-card-subtitle {
+      font-size: 23.8px;
+    }
+
+    /* ═══ RIGHT PANEL (Form) ═══ */
+    .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 34px;
+      right: 48px;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      color: var(--black);
+    }
+
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+      width: 100%;
+      max-width: 491px;
+    }
+
+    /* ═══ HEADER ═══ */
+    .form-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-header h1 {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -2.08%;
+      color: var(--black);
+    }
+
+    .form-header p {
+      font-size: 20px;
+      color: var(--text-secondary);
+    }
+
+    .form-header p a {
+      color: var(--primary);
+      font-weight: 500;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* ═══ INPUT FIELDS ═══ */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .input-group label {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--black);
+    }
+
+    .input-field {
+      width: 490px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: var(--font);
+      font-size: 16px;
+      color: var(--black);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary);
+    }
+
+    .input-field::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .password-field {
+      width: 490px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .password-field input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 37.5%;
+      color: var(--black);
+      background: transparent;
+    }
+
+    .password-field input::placeholder {
+      color: var(--text-secondary);
+      font-weight: 400;
+      letter-spacing: normal;
+    }
+
+    .eye-icon {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      color: var(--black);
+    }
+
+    /* ═══ BUTTONS ═══ */
+    .login-btn {
+      width: 491px;
+      padding: 13px 10px;
+      background: var(--primary);
+      border: none;
+      border-radius: 10px;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .login-btn:hover {
+      background: #2F8AA5;
+    }
+
+    /* ═══ REMEMBER ME / FORGOT PASSWORD ═══ */
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 490px;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .remember-me input[type="checkbox"] {
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .remember-me label {
+      font-size: 16px;
+      color: var(--black);
+      cursor: pointer;
+    }
+
+    .forgot-password {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--primary);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .forgot-password:hover {
+      text-decoration: underline;
+    }
+
+    /* ═══ SOCIAL LOGIN ═══ */
+    .social-login {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .social-login p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .social-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-btn {
+      flex: 1;
+      padding: 8px 10px;
+      background: var(--white);
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .social-btn:hover {
+      background: #f5f5f5;
+    }
+
+    .social-btn img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <!-- Left Panel -->
+    <div class="left-panel">
+      <img src="assets/login/background-image.png" alt="Background" class="left-panel-bg">
+      
+      <div class="logo-container">
+        <svg class="logo-icon" viewBox="0 0 66 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M33 8C20.85 8 11 17.85 11 30C11 42.15 20.85 52 33 52C45.15 52 55 42.15 55 30C55 17.85 45.15 8 33 8ZM33 48C23.06 48 15 39.94 15 30C15 20.06 23.06 12 33 12C42.94 12 51 20.06 51 30C51 39.94 42.94 48 33 48Z" fill="white"/>
+          <path d="M33 20C26.37 20 21 25.37 21 32C21 38.63 26.37 44 33 44C39.63 44 45 38.63 45 32C45 25.37 39.63 20 33 20ZM33 40C28.58 40 25 36.42 25 32C25 27.58 28.58 24 33 24C37.42 24 41 27.58 41 32C41 36.42 37.42 40 33 40Z" fill="white"/>
+          <circle cx="33" cy="32" r="4" fill="white"/>
+        </svg>
+        <span class="logo-text">Healthi</span>
+      </div>
+
+      <div class="feature-cards">
+        <div class="feature-card-large">
+          <svg class="feature-card-icon" viewBox="0 0 62 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="12" width="46" height="38" rx="4" stroke="white" stroke-width="2"/>
+            <path d="M8 22H54" stroke="white" stroke-width="2"/>
+            <rect x="14" y="28" width="12" height="8" rx="2" stroke="white" stroke-width="2"/>
+            <rect x="36" y="28" width="12" height="8" rx="2" stroke="white" stroke-width="2"/>
+          </svg>
+          <div class="feature-card-content">
+            <div class="feature-card-title">Book an appointment</div>
+            <div class="feature-card-subtitle">Call/text/video/inperson</div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <svg class="feature-card-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="22" cy="22" r="14" stroke="white" stroke-width="2"/>
+            <path d="M32 32L42 42" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div class="feature-card-content">
+            <div class="feature-card-title">Well qualified doctors</div>
+            <div class="feature-card-subtitle">Treat with atmost care</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <!-- Close Button -->
+      <svg class="close-btn" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+
+      <div class="form-container">
+        <!-- Header -->
+        <div class="form-header">
+          <h1>Welcome back</h1>
+          <p>New to Musaki? <a href="#">Sign up</a></p>
+        </div>
+
+        <!-- Email Input -->
+        <div class="input-group">
+          <label>Email address</label>
+          <input type="email" class="input-field" placeholder="Email address">
+        </div>
+
+        <!-- Password Input -->
+        <div class="input-group">
+          <label>Your password</label>
+          <div class="password-field">
+            <input type="password" placeholder="···········">
+            <svg class="eye-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 4C5 4 1.73 8.11 1 10C1.73 11.89 5 16 10 16C15 16 18.27 11.89 19 10C18.27 8.11 15 4 10 4ZM10 14C7.24 14 5 11.76 5 9C5 6.24 7.24 4 10 4C12.76 4 15 6.24 15 9C15 11.76 12.76 14 10 14ZM10 6C8.34 6 7 7.34 7 9C7 10.66 8.34 12 10 12C11.66 12 13 10.66 13 9C13 7.34 11.66 6 10 6Z" fill="currentColor"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Login Button -->
+        <button class="login-btn">Log in</button>
+
+        <!-- Remember Me / Forgot Password -->
+        <div class="form-options">
+          <div class="remember-me">
+            <input type="checkbox" id="remember">
+            <label for="remember">Remember me</label>
+          </div>
+          <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+
+        <!-- Social Login -->
+        <div class="social-login">
+          <p>Or log in with</p>
+          <div class="social-buttons">
+            <button class="social-btn">
+              <img src="assets/login/google-icon.png" alt="Google">
+            </button>
+            <button class="social-btn">
+              <img src="assets/login/apple-icon.png" alt="Apple">
+            </button>
+            <button class="social-btn">
+              <img src="assets/login/facebook-icon.png" alt="Facebook">
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
